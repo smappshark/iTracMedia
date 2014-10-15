@@ -1,6 +1,5 @@
 package com.iTracMedia.Dispatcher;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.iTracMedia.Bao.Beans.RequestBeans.Mapping;
+import com.iTracMedia.Bao.Beans.RequestBeans.MappingColumnsRequest;
+import com.iTracMedia.Bao.Beans.RequestBeans.MappingObjectsRequest;
 import com.iTracMedia.Bao.Beans.ResponseBeans.CommonReponse;
 import com.iTracMedia.Bao.BusinessObjects.iTracMedia.MappingBao;
 import com.iTracMedia.Bao.BusinessObjects.utils.DateFormatiTracMedia;
@@ -24,7 +24,7 @@ public class MappingDispatcher
 
     @RequestMapping (value = "/columns", method = RequestMethod.POST)
     @ResponseBody
-    public CommonReponse saveColumnMappings(@RequestBody Mapping mappingData)
+    public CommonReponse saveColumnMappings(@RequestBody MappingColumnsRequest mappingData)
     {
         CommonReponse objCommonReponse = new CommonReponse();
         objCommonReponse.setServerDate(DateFormatiTracMedia.DateToString(new Date()));
@@ -43,7 +43,7 @@ public class MappingDispatcher
     
     @RequestMapping (value = "/objects", method = RequestMethod.POST)
     @ResponseBody
-    public CommonReponse saveObjectMappings(@RequestBody ArrayList<Mapping> mappingData)
+    public CommonReponse saveObjectMappings(@RequestBody MappingObjectsRequest mappingData)
     {
         CommonReponse objCommonReponse = new CommonReponse();
         objCommonReponse.setServerDate(DateFormatiTracMedia.DateToString(new Date()));

@@ -38,5 +38,9 @@
 	<bean id="syncDataBao"
 		class="com.iTracMedia.Bao.BusinessObjects.iTracMedia.SyncDataBao"></bean>
 	<bean id="syncDataDao" class="com.iTracMedia.Dao.iTracMedia.SyncDataDao"></bean>
+	<bean id="syncSettingsBao"
+		class="com.iTracMedia.Bao.BusinessObjects.iTracMedia.SyncSettingsBao"></bean>
+	<bean id="syncSettingsDao" class="com.iTracMedia.Dao.iTracMedia.SyncSettingsDao"></bean>
 	<mvc:annotation-driven />
+
 </beans>

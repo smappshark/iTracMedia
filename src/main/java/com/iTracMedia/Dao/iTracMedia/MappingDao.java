@@ -9,9 +9,10 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.lang3.StringUtils;
 
 import com.iTracMedia.Bao.Beans.RequestBeans.ColumnsMapping;
-import com.iTracMedia.Bao.Beans.RequestBeans.Mapping;
-import com.iTracMedia.Dao.IMappingDao;
+import com.iTracMedia.Bao.Beans.RequestBeans.MappingColumnsRequest;
+import com.iTracMedia.Bao.Beans.RequestBeans.MappingObjectsRequest;
 import com.iTracMedia.Bao.BusinessObjects.utils.ReadProperties;
+import com.iTracMedia.Dao.IMappingDao;
 import com.iTracMedia.Dao.utils.DBConnectionUtil;
 import com.iTracMedia.Dao.utils.Queries;
 
@@ -20,16 +21,16 @@ public class MappingDao implements IMappingDao
 	
     static ResourceBundle resource = ReadProperties.getBundle("config");
 
-    public String mapColumnsDao(Mapping mappingData) throws Exception
+    public String mapColumnsDao(MappingColumnsRequest mappingData) throws Exception
     {
         Connection conn = null;
         DBConnectionUtil objDBConnectionUtil = new DBConnectionUtil();
-        String sObject = mappingData.getsObject(), tableName = mappingData.getTableName();
+        String sObject = mappingData.getsObject(), tableName = mappingData.getTableName(), orgId = mappingData.getOrgId(), timestamp = mappingData.getTimestamp(), username = mappingData.getUserName();
         List<ColumnsMapping> objFields = mappingData.getFields();
         int fieldsCount = objFields.size();
         if (fieldsCount > 0)
         {
-            Object[][] objBatch = new Object[fieldsCount][4];
+            Object[][] objBatch = new Object[fieldsCount][7];
             int counter = 0;
             for (ColumnsMapping field: objFields)
             {
@@ -37,6 +38,9 @@ public class MappingDao implements IMappingDao
                 objBatch[counter][1] = tableName;
                 objBatch[counter][2] = field.getSfField();
                 objBatch[counter][3] = field.getSelectedField();
+                objBatch[counter][4] = orgId;
+                objBatch[counter][5] = username;
+                objBatch[counter][6] = timestamp;
                 counter++;
             }
             QueryRunner query = new QueryRunner();
@@ -58,19 +62,23 @@ public class MappingDao implements IMappingDao
         return "Successfully Done";
     }
 
-    public String mapObjectsDao(List<Mapping> mappingData) throws Exception
+    public String mapObjectsDao(MappingObjectsRequest mappingData) throws Exception
     {
         Connection conn = null;
         DBConnectionUtil objDBConnectionUtil = new DBConnectionUtil();
-        int fieldsCount = mappingData.size();
+        int fieldsCount = mappingData.getFields().size();
         if (fieldsCount > 0)
         {
-            Object[][] objBatch = new Object[fieldsCount][2];
+            List<MappingColumnsRequest> objReq = mappingData.getFields(); 
+            Object[][] objBatch = new Object[fieldsCount][5];
             int counter = 0;
-            for (Mapping field: mappingData)
+            for (MappingColumnsRequest field: objReq)
             {
                 objBatch[counter][0] = field.getsObject();
                 objBatch[counter][1] = field.getTableName();
+                objBatch[counter][2] = mappingData.getOrgId();
+                objBatch[counter][3] = mappingData.getUserName();
+                objBatch[counter][4] = mappingData.getTimestamp();
                 counter++;
             }
             QueryRunner query = new QueryRunner();

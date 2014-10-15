@@ -1,12 +1,11 @@
 package com.iTracMedia.Bao.BusinessObjects;
 
-import java.util.List;
-
-import com.iTracMedia.Bao.Beans.RequestBeans.Mapping;
+import com.iTracMedia.Bao.Beans.RequestBeans.MappingColumnsRequest;
+import com.iTracMedia.Bao.Beans.RequestBeans.MappingObjectsRequest;
 
 public interface IMappingBao
 {
-    public String mapColumnsBao(Mapping mappingData) throws Exception;
+    public String mapColumnsBao(MappingColumnsRequest mappingData) throws Exception;
 
-    public abstract String mapObjectsBao(List<Mapping> mappingData) throws Exception;
+    public abstract String mapObjectsBao(MappingObjectsRequest mappingData) throws Exception;
 }

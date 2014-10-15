@@ -28,7 +28,6 @@ public class MetadataDao implements IMetadataDao
         DBConnectionUtil objDBConnectionUtil = new DBConnectionUtil();
         String strQuery = StringUtils.replace(Queries.TableMetadataQuery, "{iTracMediaTableName}", tableName);
         strQuery = StringUtils.replace(strQuery, "{iTracMediaDatabaseName}", resource.getString("DBNAME"));
-        log.debug(strQuery);
         List<TableMetadata> listTableMetadata = null;
         Connection conn = null;
         try

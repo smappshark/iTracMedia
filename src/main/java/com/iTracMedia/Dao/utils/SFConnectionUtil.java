@@ -2,6 +2,8 @@ package com.iTracMedia.Dao.utils;
 
 import java.util.ResourceBundle;
 
+import org.apache.log4j.Logger;
+
 import com.iTracMedia.Bao.BusinessObjects.utils.ReadProperties;
 import com.sforce.soap.partner.Connector;
 import com.sforce.soap.partner.PartnerConnection;
@@ -12,6 +14,7 @@ public class SFConnectionUtil
 {
     private static ResourceBundle resource = ReadProperties.getBundle("config");
     private static PartnerConnection connection = null;
+    static Logger log = Logger.getLogger(SFConnectionUtil.class.getName());
 
     public static PartnerConnection getSFDCConnection() throws Exception
     {
@@ -26,13 +29,15 @@ public class SFConnectionUtil
         config.setPassword(sfPassword + sfToken);
         try
         {
-            connection = Connector.newConnection(config);
+            if (connection == null)
+            {
+                connection = Connector.newConnection(config);
+            }
         }
         catch (ConnectionException e)
         {
             throw e;
         }
-
         return connection;
     }
 }

@@ -1,53 +1,67 @@
 package com.iTracMedia.Dao.iTracMedia;
 
 import java.sql.Connection;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
+import com.iTracMedia.Bao.Beans.Model.ColumnMappings;
+import com.iTracMedia.Bao.Beans.RequestBeans.SyncObjectRequest;
 import com.iTracMedia.Bao.BusinessObjects.utils.ReadProperties;
 import com.iTracMedia.Dao.ISyncDataDao;
 import com.iTracMedia.Dao.utils.DBConnectionUtil;
-import com.iTracMedia.Dao.utils.Queries;
 import com.sforce.soap.partner.QueryResult;
 import com.sforce.soap.partner.sobject.SObject;
 
 public class SyncDataDao implements ISyncDataDao
 {
     static ResourceBundle resource = ReadProperties.getBundle("config");
+    static Logger log = Logger.getLogger(SyncDataDao.class.getClass());
 
-    public String syncData(QueryResult queryResults) throws Exception
+    public String syncData(List<ColumnMappings> listCM, QueryResult queryResults, SyncObjectRequest sfRequest) throws Exception
     {
         DBConnectionUtil objDBConnectionUtil = new DBConnectionUtil();
         Connection conn = null;
         int resultsCount = queryResults.getSize();
+        String sqlQuery = StringUtils.EMPTY;
+        String fileds = StringUtils.EMPTY;
         if (resultsCount > 0)
         {
-            Object[][] objBatch = new Object[resultsCount][11];
+            Object[][] objBatch = new Object[resultsCount][listCM.size() + 3];
             int counter = 0;
             for (SObject contact: queryResults.getRecords())
             {
-                objBatch[counter][0] = (String) contact.getField("Name");
-                objBatch[counter][1] = (String) contact.getField("Name");
-                objBatch[counter][2] = (String) contact.getField("Name");
-                objBatch[counter][3] = (String) contact.getField("Title");
-                objBatch[counter][4] = (String) contact.getField("Email");
-                objBatch[counter][5] = (String) contact.getField("Phone");
-                objBatch[counter][6] = (String) contact.getField("Fax");
-                objBatch[counter][7] = (String) contact.getField("MobilePhone");
-                objBatch[counter][8] = (String) contact.getField("HomePhone");
-                objBatch[counter][9] = (String) contact.getField("OtherPhone");
-                objBatch[counter][10] = (String) contact.getField("LeadSource");
+                int cntr = 0;
+                for (ColumnMappings cm: listCM)
+                {
+                    objBatch[counter][cntr] = (String) contact.getField(cm.getSfField());
+                    cntr++;
+                }
+                objBatch[counter][cntr] = sfRequest.getOrgId();
+                cntr++;
+                objBatch[counter][cntr] = sfRequest.getUserName();
+                cntr++;
+                objBatch[counter][cntr] = sfRequest.getTimestamp();
                 counter++;
             }
+            sqlQuery = "INSERT INTO " + resource.getString("DBNAME") + "." + listCM.get(0).getTableName() + "(";
+            for (ColumnMappings cm: listCM)
+            {
+                sqlQuery += cm.getSelectedField() + ",";
+                fileds += "?,";
+            }
+            sqlQuery += "OrgId, SFUser, SFTimestamp";
+            fileds += "?,?,?";
+            sqlQuery += ") values (" + fileds + ")";
             QueryRunner query = new QueryRunner();
-            String strQuery = StringUtils.replace(Queries.ContactsSyncQuery, "{iTracMediaDatabaseName}", resource.getString("DBNAME"));
             try
             {
                 conn = objDBConnectionUtil.getJNDIConnection(resource.getString("JDBCRourceName"));
-                query.batch(conn, strQuery, objBatch);
+                query.batch(conn, sqlQuery, objBatch);
             }
             catch (Exception e)
             {
@@ -57,7 +71,12 @@ public class SyncDataDao implements ISyncDataDao
             {
                 DbUtils.closeQuietly(conn);
             }
+            return "Successfully Done";
         }
-        return "Successfully Done";
+        else
+        {
+            return "No Records to Update";
+        }
+
     }
 }

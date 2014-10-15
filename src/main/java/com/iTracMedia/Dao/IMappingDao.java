@@ -1,12 +1,11 @@
 package com.iTracMedia.Dao;
 
-import java.util.List;
-
-import com.iTracMedia.Bao.Beans.RequestBeans.Mapping;
+import com.iTracMedia.Bao.Beans.RequestBeans.MappingColumnsRequest;
+import com.iTracMedia.Bao.Beans.RequestBeans.MappingObjectsRequest;
 
 public interface IMappingDao
 {
-    public String mapColumnsDao(Mapping mappingData) throws Exception;
+    public String mapColumnsDao(MappingColumnsRequest mappingData) throws Exception;
 
-    public String mapObjectsDao(List<Mapping> mappingData) throws Exception;
+    public String mapObjectsDao(MappingObjectsRequest mappingData) throws Exception;
 }
